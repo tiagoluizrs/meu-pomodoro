@@ -7,6 +7,11 @@ import {
 
 import { storeData, getData } from "./storage";
 
+const reautenticate = async (app) => {
+  const user = await getData("user");
+  await authLogin(app, user.email, user.passwordText);
+}
+
 const userIsLoggedIn = async () => {
   const result = await getData("user");
   return result;
@@ -24,6 +29,7 @@ const authLogin = async (app, emailText, passwordText) => {
       phoneNumber,
       photoURL,
       uid,
+      passwordText,
     });
     return { 
       status: 200,
@@ -55,6 +61,7 @@ const authRegister = async (app, email, password) => {
       phoneNumber,
       photoURL,
       uid,
+      passwordText,
     });
     return {
       status: 200,
@@ -78,4 +85,4 @@ const authLogout = () => {
   storeData("user", null);
 }
 
-export { authLogin, authRegister, userIsLoggedIn, authLogout };
+export { authLogin, authRegister, userIsLoggedIn, authLogout, reautenticate };

@@ -15,7 +15,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { initializeApp } from "firebase/app";
 import { useState, useEffect } from "react";
-import { userIsLoggedIn, authLogout } from "./util/auth";
+import { userIsLoggedIn, authLogout, reautenticate } from "./util/auth";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -43,6 +43,7 @@ export default function App() {
   };
 
   useEffect(() => {
+    reautenticate();
     verifyLogin();
   }, [])
 
@@ -90,8 +91,21 @@ export default function App() {
           <Tab.Screen
             name="Profile"
             component={Profile}
+            initialParams={{
+              firebaseApp,
+            }}
             options={{
               title: "Perfil",
+              headerRight: () => (
+                <IconButton
+                  icon={(props) => <Icon name="logout" {...props} />}
+                  color="primary"
+                  onPress={() => {
+                    authLogout();
+                    setIsLoggedIn(false);
+                  }}
+                />
+              ),
             }}
           />
         </Tab.Navigator>

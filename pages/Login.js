@@ -7,7 +7,6 @@ import {
 import { View, TouchableOpacity, Text } from "react-native";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { useState } from 'react';
-import { Image } from "react-native";
 
 import { authLogin } from "../util/auth";
 

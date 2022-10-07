@@ -69,7 +69,7 @@ export default function App() {
             tabBarActiveTintColor: "blue",
             tabBarInactiveTintColor: "gray",
           })}
-          initialRouteName="Home"
+          initialRouteName="Profile"
         >
           <Tab.Screen
             name="Home"

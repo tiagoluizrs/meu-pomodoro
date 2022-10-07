@@ -1,14 +1,30 @@
 import {
   getAuth,
   updateProfile,
-  signInWithCredential,
 } from "firebase/auth";
-import { getData } from "./storage";
-import { authLogin } from "./auth";
+import { saveImageBase64ToUrl, storeData } from "./storage";
 
 const update = async (app, object) => {
     const auth = getAuth(app);
-    updateProfile(auth.currentUser, object);
+    let fileName;
+    
+    try{
+      fileName = await saveImageBase64ToUrl(
+        app,
+        object.email.replace(/[^a-zA-Z ]/g, ""),
+        object.photoURL
+      );
+      object.photoURL = fileName;
+    }catch(err){
+      console.log(err)
+      console.log("Erro ao salvar imagem")
+    }
+    try{
+      updateProfile(auth.currentUser, object);
+      storeData("user", object);
+    }catch(err){
+      console.log("Erro ao salvar perfil");
+    }
 };
 
 export { update };

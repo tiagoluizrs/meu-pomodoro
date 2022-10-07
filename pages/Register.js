@@ -50,8 +50,10 @@ const Register = ({ route }) => {
       />
       <Button
         title="Registrar"
+        loading={loading}
         onPress={async () => {
           let msg = "";
+          setLoading(true);
           if (email !== "" && password !== "") {
             const result = await authRegister(
               route.params.firebaseApp,
@@ -67,9 +69,9 @@ const Register = ({ route }) => {
             msg = "Todos os campos são obrigatórios!";
           }
           setMessage(msg);
+          setLoading(false);
         }}
         leading={(props) => <Icon name="send" {...props} />}
-        loading={loading}
         style={{
           paddingTop: 10,
           paddingBottom: 10,

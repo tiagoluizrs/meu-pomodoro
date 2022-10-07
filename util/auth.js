@@ -9,7 +9,9 @@ import { storeData, getData } from "./storage";
 
 const reautenticate = async (app) => {
   const user = await getData("user");
-  await authLogin(app, user.email, user.passwordText);
+  if(user !== null){
+    await authLogin(app, user.email, user.passwordText);
+  }
 }
 
 const userIsLoggedIn = async () => {

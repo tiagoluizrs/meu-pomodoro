@@ -1,14 +1,16 @@
-import { View, Text, Image } from "react-native";
+import { View } from "react-native";
 import {
   TextInput,
   Avatar,
   Button,
   Snackbar,
+  FAB,
 } from "@react-native-material/core";
 import { update } from "../util/user";
-import { getData } from "../util/storage";
+import { getData, getFile } from "../util/storage";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { useState, useEffect } from "react";
+import { pickImage } from "../util/image";
 
 const Profile = ({ route }) =>{
     const [email, setEmail] = useState("");
@@ -16,12 +18,23 @@ const Profile = ({ route }) =>{
     const [phoneNumber, setPhoneNumber] = useState("");
     const [photoURL, setPhotoURL] = useState("");
     const [snackBarShow, setSnackBarShow] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const loadProfile = async () => {
-        let user = await getData("user");
-        setEmail(user.email);
-        setDisplayName(user.displayName);
-        setPhoneNumber(user.phoneNumber);
+      let user = await getData("user");
+      setEmail(user.email);
+      setDisplayName(user.displayName);
+      setPhoneNumber(user.phoneNumber);
+      try{
+        setPhotoURL(await getFile(route.params.firebaseApp, user.photoURL));
+      }catch(err){
+        console.log("Erro ao carregar imagem");
+      }
+    }
+    
+    const uploadPhoto = async() => {
+      const image = await pickImage();
+      setPhotoURL(image);
     }
 
     useEffect(() => {
@@ -37,10 +50,31 @@ const Profile = ({ route }) =>{
           padding: 20,
         }}
       >
-        <Avatar
-          size={150}
-          image={{ uri: "https://mui.com/static/images/avatar/1.jpg" }}
-        />
+        <View>
+          {photoURL ? (
+            <Avatar
+              size={150}
+              image={{
+                uri: photoURL,
+              }}
+            />
+          ) : (
+            <Avatar
+              size={150}
+              image={{ uri: "https://mui.com/static/images/avatar/1.jpg" }}
+            />
+          )}
+          <FAB
+            color="primary"
+            style={{
+              position: "absolute",
+              bottom: 0,
+              right: 0,
+            }}
+            onPress={uploadPhoto}
+            icon={(props) => <Icon name="plus" {...props} />}
+          />
+        </View>
         <TextInput
           style={{
             width: "100%",
@@ -74,16 +108,19 @@ const Profile = ({ route }) =>{
         />
         <Button
           title="Editar Perfil"
+          loading={loading}
           onPress={async () => {
-            update(route.params.firebaseApp, {
+            setLoading(true);
+            await update(route.params.firebaseApp, {
               email,
               displayName,
               phoneNumber,
+              photoURL,
             });
+            setLoading(false);
             setSnackBarShow(true);
           }}
           leading={(props) => <Icon name="pencil" {...props} />}
-          //   loading={loading}
           style={{
             width: "100%",
           }}

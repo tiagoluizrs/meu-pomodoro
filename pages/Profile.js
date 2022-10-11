@@ -4,9 +4,11 @@ import {
   Avatar,
   Button,
   Snackbar,
+  FAB,
 } from "@react-native-material/core";
 import { update } from "../util/user";
 import { getData } from "../util/storage";
+import { pickImage } from "../util/image";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { useState, useEffect } from "react";
 
@@ -16,13 +18,20 @@ const Profile = ({ route }) =>{
     const [phoneNumber, setPhoneNumber] = useState("");
     const [photoURL, setPhotoURL] = useState("");
     const [snackBarShow, setSnackBarShow] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const loadProfile = async () => {
         let user = await getData("user");
         setEmail(user.email);
         setDisplayName(user.displayName);
         setPhoneNumber(user.phoneNumber);
+
     }
+
+    const uploadPhoto = async () => {
+      const image = await pickImage();
+      setPhotoURL(image);
+    };
 
     useEffect(() => {
         loadProfile();
@@ -37,10 +46,22 @@ const Profile = ({ route }) =>{
           padding: 20,
         }}
       >
-        <Avatar
-          size={150}
-          image={{ uri: "https://mui.com/static/images/avatar/1.jpg" }}
-        />
+        <View>
+          <Avatar
+            size={150}
+            image={{ uri: photoURL ? photoURL : "https://mui.com/static/images/avatar/1.jpg" }}
+          />
+          <FAB
+            color="primary"
+            style={{
+              position: "absolute",
+              bottom: 0,
+              right: 0,
+            }}
+            onPress={uploadPhoto}
+            icon={(props) => <Icon name="camera" {...props} />}
+          />
+        </View>
         <TextInput
           style={{
             width: "100%",
@@ -75,15 +96,18 @@ const Profile = ({ route }) =>{
         <Button
           title="Editar Perfil"
           onPress={async () => {
-            update(route.params.firebaseApp, {
+            setLoading(true);
+            await update(route.params.firebaseApp, {
               email,
               displayName,
               phoneNumber,
+              photoURL
             });
+            setLoading(false);
             setSnackBarShow(true);
           }}
           leading={(props) => <Icon name="pencil" {...props} />}
-          //   loading={loading}
+          loading={loading}
           style={{
             width: "100%",
           }}

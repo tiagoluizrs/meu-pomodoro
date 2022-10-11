@@ -1,4 +1,23 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  getStorage,
+  ref,
+  uploadString,
+  getDownloadURL
+} from "firebase/firebase-storage";
+
+const saveImageBase64ToUrl = async (app, prefix, imageB64) => {
+  const fileName = `${prefix}`;
+  const storage = getStorage(app);
+  const storageRef = ref(storage, fileName);
+
+  await uploadString(storageRef, imageB64, "data_url");
+  return fileName;
+}
+
+const getFile = async (app, image) => {
+
+}
 
 const storeData = async (key, value) => {
   try {
@@ -18,4 +37,4 @@ const getData = async (key) => {
   }
 };
 
-export { storeData, getData };
+export { storeData, getData, saveImageBase64ToUrl, getFile };

@@ -3,20 +3,24 @@ import {
   getStorage,
   ref,
   uploadString,
-  getDownloadURL
-} from "firebase/firebase-storage";
+  getDownloadURL,
+} from "firebase/storage";
 
 const saveImageBase64ToUrl = async (app, prefix, imageB64) => {
-  const fileName = `${prefix}`;
+  const fileName = `${prefix}_profile.jpeg`;
   const storage = getStorage(app);
   const storageRef = ref(storage, fileName);
-
-  await uploadString(storageRef, imageB64, "data_url");
-  return fileName;
+  try{
+    await uploadString(storageRef, imageB64, "data_url");
+    return fileName; 
+  }catch(err){
+    throw err;
+  }
 }
 
 const getFile = async (app, image) => {
-
+ const storage = getStorage(app);
+ return await getDownloadURL(ref(storage, image));
 }
 
 const storeData = async (key, value) => {

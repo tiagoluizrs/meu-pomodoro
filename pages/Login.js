@@ -3,6 +3,7 @@ import {
   IconButton,
   Button,
   Snackbar,
+  ActivityIndicator,
 } from "@react-native-material/core";
 import { View, TouchableOpacity, Text } from "react-native";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
@@ -49,8 +50,10 @@ const Login = ({ navigation, route }) => {
       />
       <Button
         title="Entrar"
+        loading={loading}
         onPress={async () => {
           let msg = "";
+          setLoading(true)
           if (email !== "" && password !== "") {
             const result = await authLogin(
               route.params.firebaseApp,
@@ -66,9 +69,9 @@ const Login = ({ navigation, route }) => {
             msg = "Todos os campos são obrigatórios!";
           }
           setMessage(msg);
+          setLoading(false);
         }}
         leading={(props) => <Icon name="send" {...props} />}
-        loading={loading}
         style={{
           paddingTop: 10,
           paddingBottom: 10,
